@@ -379,7 +379,7 @@ header.top{position:sticky;top:0;z-index:1500}
 const API = 'https://script.google.com/macros/s/AKfycbyfFWhgcM1nf0K7oqLNjTMsDjB1ekUe8dCvXfDH_tNzjd45-32df_rpl4KzphnUyfLF/exec';
 
 
-const BUILD_ID = '1791866333639';
+const BUILD_ID = '1791867417408';
 (function(){
   async function check(){
     if (!/^https?:/.test(location.protocol)) return;
@@ -407,7 +407,7 @@ function setMembers(list){
 }
 setMembers(SOLO ? [] : TEAM);
 
-const AREAS = /*DATA_START*/{"noma":{"label":"伊丹・野間の近所","asof":"2026年10月13日","center":[34.7685,135.4005],"home":{"lat":34.765984,"lng":135.397949},"noDate":true,"stations":[],"shops":[{"id":"n-tantan","name":"中華料理 たんたん店","genre":"中華","seat":"seat","note":"ベトナムから来た青年がやっているお店。たんたんチャーハンが花椒効いててうまい","hours":"11:00-15:00/17:00-22:00(日曜の夜は21:00まで)","hoursShort":"11:00-15:00/17:00-22:00","holiday":"木曜","summary":"ベトナム人のご夫婦が営む町中華。山椒(花椒)の効いた「たんたん炒飯」と四川麻婆豆腐が看板で、炒飯は肉がごろごろ入ったしっとりパラパラ系。揚げ鳥スパイシーチキンやエビマヨも好評。店主がGoogleの口コミ一つ一つに返信している。","catch":"山椒の効いたたんたん炒飯と四川麻婆豆腐が看板の町中華","must":"たんたん炒飯、四川麻婆豆腐、揚げ鳥スパイシーチキン、エビマヨ、唐揚げ","budget":"¥1,000〜1,999","tips":"席数・喫煙は要問い合わせ。出前・テイクアウトあり(Instagramで発信)。【支払い】QRコード決済可、カード・電子マネー不可","lat":34.7717,"lng":135.4043017,"station":"JR新伊丹駅から約1km","url":"https://tabelog.com/hyogo/A2803/A280306/28072943/","gq":"中華料理 たんたん店 伊丹","gRating":4.3,"gReviews":59,"tlMenu":"https://tabelog.com/hyogo/A2803/A280306/28072943/dtlphotolst/1/smp2/","tlMenuLabel":"食べログの料理写真"}]}}/*DATA_END*/;
+const AREAS = /*DATA_START*/{"noma":{"label":"自宅周辺(伊丹・野間)","asof":"2026年10月13日","center":[34.7685,135.4005],"home":{"lat":34.765984,"lng":135.397949},"noDate":true,"stations":[],"shops":[{"id":"n-tantan","name":"中華料理 たんたん店","genre":"中華","seat":"seat","note":"ベトナムから来た青年がやっているお店。たんたんチャーハンが花椒効いててうまい","hours":"11:00-15:00/17:00-22:00(日曜の夜は21:00まで)","hoursShort":"11:00-15:00/17:00-22:00","holiday":"木曜","summary":"ベトナム人のご夫婦が営む町中華。山椒(花椒)の効いた「たんたん炒飯」と四川麻婆豆腐が看板で、炒飯は肉がごろごろ入ったしっとりパラパラ系。揚げ鳥スパイシーチキンやエビマヨも好評。店主がGoogleの口コミ一つ一つに返信している。","catch":"山椒の効いたたんたん炒飯と四川麻婆豆腐が看板の町中華","must":"たんたん炒飯、四川麻婆豆腐、揚げ鳥スパイシーチキン、エビマヨ、唐揚げ","budget":"¥1,000〜1,999","tips":"席数・喫煙は要問い合わせ。出前・テイクアウトあり(Instagramで発信)。【支払い】QRコード決済可、カード・電子マネー不可","lat":34.7717,"lng":135.4043017,"station":"JR新伊丹駅から約1km","url":"https://tabelog.com/hyogo/A2803/A280306/28072943/","gq":"中華料理 たんたん店 伊丹","gRating":4.3,"gReviews":59,"tlMenu":"https://tabelog.com/hyogo/A2803/A280306/28072943/dtlphotolst/1/smp2/","tlMenuLabel":"食べログの料理写真"}]}}/*DATA_END*/;
 
 
 function openMin(s){
@@ -673,7 +673,7 @@ function drawList(){
   if (SOLO && !VIEW) $('#tab-team').hidden = !group; 
   $('#team-n').textContent = A.shops.filter(s=>wantsOf(s.id).length || pickOf(s.id)!==null).length;
   const fit = A.shops.filter(s=>s.fit!==false);
-  if (VIEW) { $('#foot').textContent = `${A.label}:${A.shops.length}店(昼 ${A.shops.filter(s=>s.type==='lunch').length}・夜 ${A.shops.filter(s=>s.type==='night').length})。評価はGoogleマップ、${A.asof}時点の調べ。距離は直線距離の目安。行く前に営業時間を確認してください。`; return; }
+  if (VIEW || A.home) { $('#foot').textContent = `${A.label}:${A.shops.length}店(昼 ${A.shops.filter(s=>s.type==='lunch').length}・夜 ${A.shops.filter(s=>s.type==='night').length})。評価はGoogleマップ、${A.asof}時点の調べ。距離は直線距離の目安。行く前に営業時間を確認してください。`; return; }
   $('#foot').textContent = `${A.label}:30〜40代の飲み向け${fit.length}店(昼 ${fit.filter(s=>s.type==='lunch').length}・夜 ${fit.filter(s=>s.type==='night').length})＋食事中心${A.shops.length-fit.length}店。評価はGoogleマップ、${A.asof}時点の調べ。1人5,000円を超える店は載せていません。行く前に電話で確認を。`;
 }
 
