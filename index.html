@@ -329,7 +329,7 @@ header.top{position:sticky;top:0;z-index:1500}
     <button class="chip" id="f-sit" data-f="sit" aria-pressed="false">座れる</button>
     <button class="chip" id="f-stand" data-f="stand" aria-pressed="false">立ち飲み</button>
     <button class="chip" id="f-want" data-f="want" aria-pressed="false">誰かの推し</button>
-    <button class="chip" id="f-open" data-f="open" aria-pressed="false">9/22営業見込み</button>
+    <button class="chip" id="f-open" data-f="open" aria-pressed="false">当日営業見込み</button>
     <button class="chip out" id="f-out" aria-pressed="false">食事中心の店も表示</button>
     <select class="sortsel" id="sort" aria-label="並び順">
       <option value="num">番号順</option>
@@ -375,11 +375,11 @@ header.top{position:sticky;top:0;z-index:1500}
 </div>
 
 <script>
-// ▼ Googleスプレッドシート(Apps Script)のWebアプリURL。空なら共有なし(この端末だけに保存)
+
 const API = 'https://script.google.com/macros/s/AKfycbyfFWhgcM1nf0K7oqLNjTMsDjB1ekUe8dCvXfDH_tNzjd45-32df_rpl4KzphnUyfLF/exec';
 
-// このページの版(build.js が書き込む)。開いたときに公開中の版と比べ、新しければ自動で読み込み直す
-const BUILD_ID = '1791866309964';
+
+const BUILD_ID = '1791866333639';
 (function(){
   async function check(){
     if (!/^https?:/.test(location.protocol)) return;
@@ -392,19 +392,13 @@ const BUILD_ID = '1791866309964';
   check();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
 })();
-// このページの設定(build.js が書き込む)。team=5人で共有する版、solo=見るだけ版(推しはこの端末だけ。共有コードを入れた人どうしだけで共有)
+
 const PAGE = /*PAGE_START*/{"mode":"view","prefix":"nm-","areas":["noma"],"def":"noma","owner":""}/*PAGE_END*/;
-const VIEW = PAGE.mode === 'view';          // 見るだけ版(推しの機能なし)
-const SOLO = PAGE.mode === 'solo' || VIEW;  // 5人の共有を使わない版
+const VIEW = PAGE.mode === 'view';         
+const SOLO = PAGE.mode === 'solo' || VIEW; 
 const PALETTE = ['#7048e8','#e03131','#2f9e44','#0c8599','#e0a100','#d6336c','#1971c2','#f76707','#5c940d','#862e9c','#495057','#0b7285'];
-const TEAM = [
-  {name:'いのぴー',  c:'#e03131'},
-  {name:'まなてぃ', c:'#e0a100'},
-  {name:'たっちゃん', c:'#2f9e44'},
-  {name:'まっちょ',  c:'#0c8599', ini:'M'},  // まなてぃと「ま」が重なるので M
-  {name:'りん',      c:'#7048e8'}
-];
-const OWNER = 'りん';
+const TEAM = [];
+const OWNER = '';
 let MEMBERS = [], COLOR = {}, INI = {};
 function setMembers(list){
   MEMBERS = list;
@@ -414,8 +408,8 @@ function setMembers(list){
 setMembers(SOLO ? [] : TEAM);
 
 const AREAS = /*DATA_START*/{"noma":{"label":"伊丹・野間の近所","asof":"2026年10月13日","center":[34.7685,135.4005],"home":{"lat":34.765984,"lng":135.397949},"noDate":true,"stations":[],"shops":[{"id":"n-tantan","name":"中華料理 たんたん店","genre":"中華","seat":"seat","note":"ベトナムから来た青年がやっているお店。たんたんチャーハンが花椒効いててうまい","hours":"11:00-15:00/17:00-22:00(日曜の夜は21:00まで)","hoursShort":"11:00-15:00/17:00-22:00","holiday":"木曜","summary":"ベトナム人のご夫婦が営む町中華。山椒(花椒)の効いた「たんたん炒飯」と四川麻婆豆腐が看板で、炒飯は肉がごろごろ入ったしっとりパラパラ系。揚げ鳥スパイシーチキンやエビマヨも好評。店主がGoogleの口コミ一つ一つに返信している。","catch":"山椒の効いたたんたん炒飯と四川麻婆豆腐が看板の町中華","must":"たんたん炒飯、四川麻婆豆腐、揚げ鳥スパイシーチキン、エビマヨ、唐揚げ","budget":"¥1,000〜1,999","tips":"席数・喫煙は要問い合わせ。出前・テイクアウトあり(Instagramで発信)。【支払い】QRコード決済可、カード・電子マネー不可","lat":34.7717,"lng":135.4043017,"station":"JR新伊丹駅から約1km","url":"https://tabelog.com/hyogo/A2803/A280306/28072943/","gq":"中華料理 たんたん店 伊丹","gRating":4.3,"gReviews":59,"tlMenu":"https://tabelog.com/hyogo/A2803/A280306/28072943/dtlphotolst/1/smp2/","tlMenuLabel":"食べログの料理写真"}]}}/*DATA_END*/;
-// 30〜40代で飲んで食べる向きの店を先に、食事中心の店(fit:false)は後ろに回して番号をつける
-// 9/22(祝)の開店時刻から 昼(16:59までに開店)/夜(17時以降に開店) に分ける
+
+
 function openMin(s){
   const t = v => { const m = String(v||'').match(/(\d{1,2}):(\d{2})/); return m ? (+m[1])*60 + (+m[2]) : null; };
   const hs = s.hoursShort || '';
@@ -428,30 +422,30 @@ function openMin(s){
 function slotOf(s){
   const m = openMin(s);
   if (m == null) return s.type === 'lunch' ? 'lunch' : 'night';
-  return m < 17*60 ? 'lunch' : 'night';  // 昼=16:59までに開店、夜=17時以降に開店
+  return m < 17*60 ? 'lunch' : 'night'; 
 }
 const SLOT = {lunch:'昼から開店(〜16:59)', night:'夜から開店(17時〜)'};
 const SLOT_SHORT = {lunch:'昼', night:'夜'};
 for (const k in AREAS) AREAS[k].shops.forEach(s => { s.type = slotOf(s); });
-// 1人5,000円を上回る店(予算の目安の真ん中が5,000円超)は載せない
+
 for (const k in AREAS) AREAS[k].shops = AREAS[k].shops.filter(s => { const p = priceOf(s); return !p || (p.lo+p.hi)/2 <= 5000; });
 for (const k in AREAS) { AREAS[k].shops.sort((a,b)=>(a.fit===false)-(b.fit===false)); AREAS[k].shops.forEach((s,i)=>{ s.no = i+1; }); }
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store = {
-  // 同じサイトの別ページ(見るだけ版)とは保存場所を分ける
+
   get(k){ try { return JSON.parse(localStorage.getItem(PAGE.prefix + k)); } catch(e){ return null; } },
   set(k,v){ try { localStorage.setItem(PAGE.prefix + k, JSON.stringify(v)); } catch(e){} }
 };
 
-// エリア:最初は PAGE.def(5人の版は甲子園口)。前に選んだエリアがあればそれ
+
 let area = store.get('hn-area2') || PAGE.def; if (!PAGE.areas.includes(area) || !AREAS[area]) area = PAGE.def;
 let filters = new Set(), sort = 'num', selId = null, showOut = false, tab = 'all', query = '', who = null;
 let me, shared;
-// 見るだけ版:推しはこの端末に保存。共有コードに参加しているときだけ、同じコードの人と共有する
-let group = SOLO ? store.get('hn-group') : null;   // {code, name}
-let local = SOLO ? (store.get('hn-local') || []) : [];  // この端末だけの推し(店のid)
+
+let group = SOLO ? store.get('hn-group') : null;  
+let local = SOLO ? (store.get('hn-local') || []) : []; 
 function soloLocal(){
   me = '自分';
   setMembers([{name:me, c:PALETTE[0]}]);
@@ -464,22 +458,22 @@ if (SOLO) {
   me = store.get('hn-me'); if (!COLOR[me]) me = null;
   shared = store.get('hn-shared') || {wants:{}, picks:{}};
 }
-// 共有リンク(…#g=コード)から開いたときは、そのコードで参加する画面を出す
-// (新しい版への自動読み込みでリンクの#が消えても大丈夫なように、いったん端末に覚えておく)
+
+
 const hashCode = SOLO ? ((location.hash.match(/g=([A-Za-z0-9]{4,8})/) || [])[1] || '').toUpperCase() : '';
 if (hashCode) { store.set('hn-pend', hashCode); history.replaceState(null, '', location.pathname + location.search); }
 const LINK_CODE = SOLO ? (store.get('hn-pend') || '') : '';
-// りんの「行きたい」を最初から入れておく(各端末で1回だけ。あとで外した店は戻さない)
-const DEFAULT_WANTS = {'りん': ['f-jack','f-yuji','f-shibireya','f-santoku','f-atariya-shokudo','k-tamaki']};
+
+const DEFAULT_WANTS = {};
 if (!SOLO && !store.get('hn-seed-v1')) {
   for (const [name, ids] of Object.entries(DEFAULT_WANTS)) for (const id of ids) {
     const cur = new Set(shared.wants[id] || []); cur.add(name); shared.wants[id] = [...cur];
   }
   store.set('hn-shared', shared); store.set('hn-seed-v1', true);
 }
-// 地図の凡例のON/OFF(昼・夜は一覧にも効く。★・安は印だけ消す)
+
 let show = Object.assign({lunch:true, night:true, pick:true, yu:true, ring:true}, store.get('hn-show') || {});
-show.ring = true;  // 徒歩圏の円は常に表示(切替ボタンはなくした)
+show.ring = true; 
 
 /* ---------- map ---------- */
 const map = L.map('map', {zoomControl:true}).setView(AREAS[area].center, 16);
@@ -500,8 +494,8 @@ function full(v){
   if (v==null || v==='' || /^要(確認|問い合わせ)$/.test(v)) return ASK;
   return UNSURE.test(v) ? ASK + ' ' + esc(v) : esc(v);
 }
-const D922 = {ok:['ok','9/22営業見込み'], ask:['warn','9/22要問い合わせ'], ng:['ng','9/22休みの可能性大']};
-// 1人あたりの予算の目安から価格帯を出す(好み:1軒3,000円まで、ベストは2,000円で3〜4軒はしご)
+const D922 = {ok:['ok','当日営業見込み'], ask:['warn','当日要問い合わせ'], ng:['ng','当日休みの可能性大']};
+
 function priceOf(s){
   const n = String(s.budget||'').replace(/,/g,'').match(/\d+/g);
   if (!n) return null;
@@ -512,7 +506,7 @@ function priceOf(s){
   return {k:'p4', t:'1人3,000円超', lo, hi};
 }
 function priceTag(s){ const p = priceOf(s); return p ? `<span class="tag ${p.k}">${p.t}</span>` : '<span class="tag warn">価格 要問い合わせ</span>'; }
-// 説明文(tips)の書き方から喫煙の扱いを判定する
+
 function smokeOf(s){
   const t = String(s.tips || '') + ' ' + String(s.smoke || '');
   if (/全席喫煙可|全面喫煙可|全席喫煙|喫煙可(?!\(要相談\))/.test(t) && !/店内禁煙|全席禁煙|完全禁煙|全面禁煙/.test(t)) {
@@ -527,15 +521,15 @@ function smokeOf(s){
 }
 const SMOKE = {ok:['sm-ok','喫煙可'], part:['sm-part','分煙・加熱式など'], out:['sm-out','店外に喫煙所'], no:['sm-no','禁煙']};
 function smokeTag(s, all){ const k = smokeOf(s); if (!k) return all ? '<span class="tag warn">喫煙 要問い合わせ</span>' : ''; if (!all && (k==='no' || k==='out')) return ''; return `<span class="tag ${SMOKE[k][0]}">${SMOKE[k][1]}</span>`; }
-// 自宅(エリアの home)からの距離と、歩き・自転車でかかる時間の目安
+
 function distOf(s){
   const h = AREAS[area].home; if (!h || s.lat == null) return null;
   const toR = d => d * Math.PI / 180;
   const dLat = toR(s.lat - h.lat), dLng = toR(s.lng - h.lng) * Math.cos(toR((s.lat + h.lat) / 2));
   return Math.round(6371000 * Math.sqrt(dLat*dLat + dLng*dLng));
 }
-const walkMin = m => Math.max(1, Math.round(m / 80));    // 歩き 分速80m
-const bikeMin = m => Math.max(1, Math.round(m / 230));   // 自転車 分速230m(時速14kmくらい)
+const walkMin = m => Math.max(1, Math.round(m / 80));   
+const bikeMin = m => Math.max(1, Math.round(m / 230));  
 function distTag(s){ const m = distOf(s); return m == null ? '' : `<span class="tag dist">徒歩${walkMin(m)}分</span>`; }
 function distText(s){
   const m = distOf(s); if (m == null) return null;
@@ -543,28 +537,28 @@ function distText(s){
 }
 const SEAT = {stand:'立ち飲み', seat:'着席', both:'立ち飲み＋席'};
 function seatTag(s){ return s.seat ? `<span class="tag seat ${s.seat}">${SEAT[s.seat]}</span>` : '<span class="tag warn">立ち/席 要問い合わせ</span>'; }
-// 日程が決まっていないエリア(noDate)では「9/22営業」の表示を出さない
+
 function dayTag(s){ if (AREAS[area].noDate) return ''; const d = D922[s.d922] || D922.ask; return `<span class="tag ${d[0]}">${d[1]}</span>`; }
-// 見るだけ版で、作った人(りん)のおすすめの店に印をつける
+
 const REC = PAGE.owner + '推し';
 function recTag(s){ return SOLO && s.rec ? `<span class="tag rec">${esc(REC)}</span>` : ''; }
 function wantsOf(id){ return (shared.wants[id]||[]).filter(n=>COLOR[n]).sort((a,b)=>MEMBERS.findIndex(m=>m.name===a)-MEMBERS.findIndex(m=>m.name===b)); }
-// ★りんのイチオシは「シンプルに」の要望で表示をやめた(データの仕組みは残してある)
+
 const PICKS_ON = false;
 function pickOf(id){ return PICKS_ON && Object.prototype.hasOwnProperty.call(shared.picks, id) ? shared.picks[id] : null; }
 function openedText(s){
   if (!s.year) return s.opened || null;
-  // 2026年9月時点で何年目か(月が不明なら年の半ばとみなす)
+
   const elapsed = (2026 + 8/12) - (s.year + ((s.month || 6.5) - 1)/12);
   const t = s.year + '年' + (s.month ? s.month + '月' : '') + '開業' + (elapsed < 1 ? '(1年未満)' : '(' + (Math.floor(elapsed) + 1) + '年目)');
   return s.opened ? t + '。' + s.opened : t;
 }
 function rateNum(s){ return s.gRating ?? null; }
-// 安うま:Googleの評価4.3以上(口コミ20件以上)で、1人3,000円以内に収まる店
-function yasuuma(s){ if (s.yu === true) return true;  // りんのおすすめで個別に安うま扱いにした店
+
+function yasuuma(s){ if (s.yu === true) return true; 
   const p = priceOf(s); return s.gRating >= 4.3 && (s.gReviews||0) >= 20 && p && (p.k==='p1' || p.k==='p2'); }
 function menuImg(s){ return 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(s.name.replace(/(.*?)/g,'') + ' ' + AREAS[area].label.replace(/.*・/,'') + ' メニュー'); }
-// Googleマップのお店のページ(メニュー・写真・クチコミのタブがある)を開く。店名で1件に絞れない店は gq(Google上の正式名)で検索
+
 function gmaps(s){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.gq || (s.name + ' ' + (s.address||''))); }
 function people(ns){ return ns.map(n=>`<span class="pp" style="background:${COLOR[n]};--c:${COLOR[n]}"><i>${esc(INI[n])}</i>${esc(n)}</span>`).join(''); }
 function toast(t){ const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(),1800); }
@@ -573,13 +567,13 @@ function toast(t){ const el=document.createElement('div'); el.className='toast';
 function drawBase(){
   base.clearLayers();
   const A = AREAS[area];
-  // 自宅があるエリアでは、自宅の位置と「徒歩10分・自転車10分」の円を出す
+
   if (A.home) {
     L.marker([A.home.lat, A.home.lng], {icon:L.divIcon({className:'', html:'<span class="stn home">🏠 自宅</span>', iconSize:[0,0]}), interactive:false, zIndexOffset:-50}).addTo(base);
     if (show.ring) [[800,'徒歩10分'],[2300,'自転車10分']].forEach(([r]) => L.circle([A.home.lat, A.home.lng], {radius:r, className:'ring', weight:1.5, dashArray:'4 5', fill:true, interactive:false}).addTo(base));
   }
   if (show.ring && !A.noRing && !A.home) {
-  // 円は駅(中心)から歩いて5分(約400m)・10分(約800m)の範囲
+
   const lat0 = A.center[0], k = 1/111320;
   [[400,'駅から徒歩5分'],[800,'駅から徒歩10分']].forEach(([r,t]) => {
     L.circle(A.center, {radius:r, className:'ring', weight:1.5, dashArray:'4 5', fill:true, interactive:false}).addTo(base);
@@ -588,7 +582,7 @@ function drawBase(){
   (A.stations||[]).forEach(st => L.marker([st.lat,st.lng], {icon:L.divIcon({className:'', html:`<span class="stn">${esc(st.name)}</span>`, iconSize:[0,0]}), interactive:false, zIndexOffset:-100}).addTo(base));
 }
 
-// 選んだチップの条件。昼と夜は「どちらか」、それ以外は「すべて満たす」
+
 const CHIP = {
   rec:   s => !!s.rec,
   yu:    s => yasuuma(s),
@@ -615,7 +609,7 @@ function visible(){
     (!q || (t => t.includes(q) || yomiHits(q).some(w => t.includes(w.toLowerCase())))([s.name,s.genre,s.must,s.catch,s.summary].join(' ').toLowerCase())) && (
     chipOk(s)));
   const byPick = (a,b) => (pickOf(b.id)!==null) - (pickOf(a.id)!==null);
-  // みんな推しタブ(番号順のとき):昼の店→夜の店の順に分け、その中は推しの人数が多い順
+
   if (tab==='team' && sort==='num') list = [...list].sort((a,b)=> (a.type!==b.type ? (a.type==='lunch' ? -1 : 1) : 0) || wantsOf(b.id).length - wantsOf(a.id).length || a.no-b.no);
   if (sort==='votes') list = [...list].sort((a,b)=> wantsOf(b.id).length - wantsOf(a.id).length || byPick(a,b) || a.no-b.no);
   if (sort==='price') list = [...list].sort((a,b)=> ((priceOf(a)||{hi:1e9}).hi - (priceOf(b)||{hi:1e9}).hi) || ((priceOf(a)||{lo:1e9}).lo - (priceOf(b)||{lo:1e9}).lo));
@@ -641,14 +635,14 @@ function rateHtml(s){
   return `<div class="rate"><small>評価 —</small></div>`;
 }
 
-// みんな推しタブで、メンバーごとに絞り込むボタン
+
 function drawMembers(){
   const el = $('#members'); el.hidden = tab !== 'team'; if (el.hidden) return;
   const A = AREAS[area];
   const cnt = n => A.shops.filter(s => wantsOf(s.id).includes(n)).length;
   el.innerHTML = `<button id="mb-all" data-who="" aria-pressed="${!who}">全員</button>` + MEMBERS.map((m,i) => `<button id="mb-${i}" data-who="${esc(m.name)}" style="--c:${m.c}" aria-pressed="${who===m.name}"><i>${esc(INI[m.name])}</i>${esc(m.name)} <b>${cnt(m.name)}</b></button>`).join('');
 }
-// 0件のときに、何で絞り込まれているかと解除ボタンを出す
+
 function emptyHint(){
   const why = [];
   if (tab==='mine') why.push('「おれ推し」タブ');
@@ -670,13 +664,13 @@ function drawList(){
       ${rateHtml(s)}
       <span class="meta">${distTag(s)}${recTag(s)}${yasuuma(s)?'<span class="tag yu">安うま</span>':''}<span class="tag ${s.type}">${SLOT_SHORT[s.type]}</span><span class="tag g">${esc(s.genre)}</span>${priceTag(s)}${seatTag(s)}${smokeTag(s,false)}${dayTag(s)}${short(s.hoursShort||s.hours)}</span>
       <span class="one">${s.fit===false?`<span class="tag out">食事中心:${esc(s.why)}</span>`:''}${s.note?`<span class="tag note">ひとこと</span>`:''}${esc(s.note || s.catch || s.summary)}</span>
-      ${w.length||pk?`<span class="who">${pk?'<span class="pick">★りんのイチオシ</span>':''}${people(w)}</span>`:''}
+      ${w.length||pk?`<span class="who">${pk?'<span class="pick">★イチオシ</span>':''}${people(w)}</span>`:''}
     </button>`;
   }).join('') : (tab==='mine' && !filters.size && !query.trim() ? '<div class="empty">まだ「推し!」をつけたお店がありません。お店を開いて「推し!」を押すと、ここに並びます。</div>' : tab==='team' && !filters.size && !query.trim() ? (who ? '<div class="empty">' + esc(who) + 'さんはまだ「推し!」をつけていません。</div>' : '<div class="empty">まだ誰も「推し!」をつけていません。</div>') : '<div class="empty">該当するお店がありません</div>')) + (list.length ? '' : emptyHint());
   const A = AREAS[area];
   $('#mine-n').textContent = me ? A.shops.filter(s=>wantsOf(s.id).includes(me)).length : 0;
   drawMembers();
-  if (SOLO && !VIEW) $('#tab-team').hidden = !group;  // みんな推しは共有コードに参加しているときだけ
+  if (SOLO && !VIEW) $('#tab-team').hidden = !group; 
   $('#team-n').textContent = A.shops.filter(s=>wantsOf(s.id).length || pickOf(s.id)!==null).length;
   const fit = A.shops.filter(s=>s.fit!==false);
   if (VIEW) { $('#foot').textContent = `${A.label}:${A.shops.length}店(昼 ${A.shops.filter(s=>s.type==='lunch').length}・夜 ${A.shops.filter(s=>s.type==='night').length})。評価はGoogleマップ、${A.asof}時点の調べ。距離は直線距離の目安。行く前に営業時間を確認してください。`; return; }
@@ -702,9 +696,9 @@ function detail(s){
            : `<div class="row"><button class="sbtn" id="vote-who">まず自分を選んで「推し!」をつける</button></div>`}
       <div class="row">${MEMBERS.map(m=>`<span class="mem${w.includes(m.name)?' on':''}" style="--c:${m.c}"><i></i>${esc(m.name)}</span>`).join('')}</div>
     </div>`;
-  const rinNote = pk!==null ? `<div class="rin"><b>★ りんのイチオシ</b>${pk?`<br>${esc(pk)}`:''}</div>` : '';
+  const rinNote = pk!==null ? `<div class="rin"><b>★ イチオシ</b>${pk?`<br>${esc(pk)}`:''}</div>` : '';
   const rinEdit = PICKS_ON && me===OWNER ? `<div class="pickedit">
-      <label for="pick-text" style="font-size:12px;font-weight:700">★ イチオシのひとこと(りんだけに表示される編集欄)</label>
+      <label for="pick-text" style="font-size:12px;font-weight:700">★ イチオシのひとこと(編集欄)</label>
       <textarea id="pick-text" maxlength="200" placeholder="例:ここの鶏刺しは絶対食べてほしい">${esc(pk||'')}</textarea>
       <div class="row"><button class="sbtn gold" id="pick-save">${pk!==null?'★ 更新する':'★ イチオシにする'}</button>${pk!==null?'<button class="sbtn" id="pick-del">イチオシを外す</button>':''}</div>
     </div>` : '';
@@ -716,7 +710,7 @@ function detail(s){
     ${s.fit===false?`<div class="callout" style="background:var(--ground)"><b style="color:var(--muted)">30〜40代の飲み向けリストから除外:</b> ${esc(s.why)}</div>`:''}
     ${s.note?`<div class="callout note"><b>ひとこと:</b> ${esc(s.note)}</div>`:''}
     ${SOLO && s.rec?`<div class="callout rec"><b>★ ${esc(REC)}:</b> ${esc(PAGE.owner)}のおすすめのお店です</div>`:''}
-    ${s.holidayNote?`<div class="callout"><b>${AREAS[area].noDate?'営業日メモ':'9/22(祝)メモ'}:</b> ${esc(s.holidayNote)}</div>`:''}
+    ${s.holidayNote?`<div class="callout"><b>${AREAS[area].noDate?'営業日メモ':'当日(祝)メモ'}:</b> ${esc(s.holidayNote)}</div>`:''}
     <p class="summary">${esc(s.summary)}</p>
     <dl class="kv">
       ${distText(s)?`<dt>自宅から</dt><dd>${esc(distText(s))}</dd>`:''}
@@ -752,7 +746,7 @@ function setArea(a){
   $('#area-sel').value = a;
   $('#sheet').classList.remove('open');
   const A = AREAS[a];
-  // 日程未定のエリアでは「9/22営業見込み」のチップを隠す。作った人の推しの印がある店があれば、そのチップを出す
+
   $('#f-open').hidden = !!A.noDate; if (A.noDate) filters.delete('open');
   $('#f-rec').hidden = !(SOLO && A.shops.some(s => s.rec)); if ($('#f-rec').hidden) filters.delete('rec');
   drawChips();
@@ -778,7 +772,7 @@ function drawMe(){
 }
 
 /* ---------- 共有コード(見るだけ版) ---------- */
-const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';  // 見間違えやすい 0/O・1/I は使わない
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
 function newCode(){ let c = ''; const r = crypto.getRandomValues(new Uint32Array(6)); for (const v of r) c += CODE_CHARS[v % CODE_CHARS.length]; return c; }
 function shareLink(){ return location.origin + location.pathname + '#g=' + group.code; }
 function openShare(prefill){
@@ -813,7 +807,7 @@ async function joinGroup(code, name){
   err('参加しています…');
   try {
     let j = await call({action:'gjoin', g:code, who:name});
-    // このスマホだけでつけていた推しも、共有に持っていく
+
     for (const id of local) if (!(j.wants[id] || []).includes(name)) j = await call({action:'gvote', g:code, who:name, shop:id, on:'1'});
     group = {code, name}; store.set('hn-group', group); store.set('hn-lastname', name); store.set('hn-pend', null);
     me = name; applyGroup(j);
@@ -821,7 +815,7 @@ async function joinGroup(code, name){
   } catch(e){ err('参加できませんでした。電波を確認して、もう一度押してください'); }
 }
 function leaveGroup(){
-  // 自分の推しは、このスマホだけの推しとして残す
+
   local = AREAS_ALL_IDS().filter(id => (shared.wants[id] || []).includes(me));
   store.set('hn-local', local); group = null; store.set('hn-group', null); store.set('hn-members', null);
   soloLocal(); if (tab === 'team') { tab = 'all'; who = null; document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.tab==='all')); }
@@ -860,7 +854,7 @@ async function call(params){
   const j = await r.json(); if (j.error) throw new Error(j.error);
   return j;
 }
-// 共有コードのグループの状態を反映(参加している人の色は参加順)
+
 function applyGroup(j){
   const names = (j.members || []).slice(); if (!names.includes(me)) names.push(me);
   store.set('hn-members', names);
@@ -916,7 +910,7 @@ $('#area-sel').hidden = PAGE.areas.length < 2;
 $('#area-sel').addEventListener('change', e => setArea(e.target.value));
 $('#f-rec').textContent = '★ ' + REC;
 if (SOLO) $('#f-want').textContent = '推しの店';
-// 見るだけ版:推しに関わるボタン・タブ・共有の表示をまとめて消す
+
 if (VIEW) { for (const id of ['#me-btn','#tab-mine','#tab-team','#f-want','#sync']) $(id).hidden = true; $('#tab-all').textContent = '一覧'; }
 $('#f-out').addEventListener('click', e => { showOut = !showOut; e.currentTarget.setAttribute('aria-pressed', showOut); drawPins(); drawList(); });
 function drawChips(){ document.querySelectorAll('.chip[data-f]').forEach(c => c.setAttribute('aria-pressed', c.dataset.f === 'all' ? !filters.size : filters.has(c.dataset.f))); }
@@ -926,9 +920,9 @@ document.querySelectorAll('.chip[data-f]').forEach(b => b.addEventListener('clic
   else if (filters.has(k)) filters.delete(k);
   else {
     filters.add(k);
-    // 時間帯のチップを押したら、凡例でOFFにしていてもその時間帯を表示に戻す
+
     if (['lunch','night'].includes(k) && show[k] === false) { show[k] = true; store.set('hn-show', show); drawLegend(); }
-    // 「3,000円以内」と「2,000円ではしご」は片方だけ
+
     if (k === 'p1') filters.delete('p2'); if (k === 'p2') filters.delete('p1');
   }
   drawChips(); drawPins(); drawList();
@@ -940,11 +934,11 @@ document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click
   drawPins(); drawList(); $('#list').scrollTop = 0;
 }));
 let qTimer; $('#q').addEventListener('input', e => { drawSugg(); clearTimeout(qTimer); qTimer = setTimeout(() => { query = e.target.value; drawPins(); drawList(); }, 150); });
-// 入力に合わせて候補を出す:お店の名前(押すとそのお店を開く)と、ジャンル・名物の言葉(押すとその言葉で絞り込み)
+
 const WORDS = ['唐揚げ','焼鳥','立ち飲み','刺身','餃子','おでん','串カツ','ワイン','日本酒','牡蠣','焼肉','ホルモン','たこ焼き','天ぷら','お好み焼き','中華','韓国','タイ料理','イタリアン','スペイン','ビストロ','海鮮','マグロ','ラム','ジンギスカン','焼きとん','麻婆豆腐','ハイボール','せんべろ','鍋','寿司','炉端','カレー','ステーキ','居酒屋','バル'];
-// ひらがなで打っても漢字の言葉が出るように読みを持たせる
+
 const YOMI = {'唐揚げ':'からあげ','焼鳥':'やきとり','立ち飲み':'たちのみ','刺身':'さしみ','餃子':'ぎょうざ','串カツ':'くしかつ','日本酒':'にほんしゅ','牡蠣':'かき','焼肉':'やきにく','天ぷら':'てんぷら','お好み焼き':'おこのみやき','中華':'ちゅうか','韓国':'かんこく','海鮮':'かいせん','麻婆豆腐':'まーぼーどうふ','寿司':'すし','炉端':'ろばた','鍋':'なべ','焼きとん':'やきとん','居酒屋':'いざかや','たこ焼き':'たこやき','ホルモン':'ほるもん','おでん':'おでん','ワイン':'わいん','ラム':'らむ','ジンギスカン':'じんぎすかん','カレー':'かれー','ステーキ':'すてーき','バル':'ばる','ハイボール':'はいぼーる','イタリアン':'いたりあん','スペイン':'すぺいん','ビストロ':'びすとろ','タイ料理':'たいりょうり','マグロ':'まぐろ','せんべろ':'せんべろ'};
-// 入力(ひらがな)から、読みが前方一致する漢字の言葉を返す
+
 function yomiHits(q){ const k = kana(q); return k.length < 2 ? [] : Object.keys(YOMI).filter(w => YOMI[w].startsWith(k)); }
 let suggIdx = -1;
 function kana(s){ return String(s||'').toLowerCase().replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60)); }
@@ -986,7 +980,7 @@ document.querySelectorAll('.legend button').forEach(b => b.addEventListener('cli
   if (k === 'ring') drawBase(); drawPins(); drawList();
 }));
 drawLegend();
-// 境目のバーを上下にドラッグして、地図と一覧の大きさを変える(大きさはこの端末に記憶)
+
 (function(){
   const bar = $('#resizer'), wrap = document.querySelector('.mapwrap');
   const apply = px => { const max = window.innerHeight - 260; px = Math.max(120, Math.min(max, px)); wrap.style.flexBasis = px + 'px'; wrap.style.minHeight = '0'; map.invalidateSize(); return px; };
@@ -1008,7 +1002,7 @@ $('#list').addEventListener('click', e => {
   drawChips();
   drawPins(); drawList();
 });
-// 一覧を「店名だけ」と「詳しく」で切り替える(この端末に記憶)
+
 let compact = !!store.get('hn-compact');
 function applyCompact(){ $('#list').classList.toggle('compact', compact); $('#view-sw').setAttribute('aria-pressed', compact); $('#view-sw').textContent = compact ? '詳細' : '店名'; }
 $('#view-sw').addEventListener('click', () => { compact = !compact; store.set('hn-compact', compact); applyCompact(); });
@@ -1025,9 +1019,9 @@ if (SOLO && !group) setSync('', 'この端末だけに保存中(共有してい�
 else if (API) { setSync('', '読み込み中…'); pull(); }
 else setSync('', 'この端末だけに保存中(共有の設定前)');
 if (API) setInterval(() => { if (!document.hidden) pull(); }, 20000);
-// 初めて開いたとき(この端末でまだ名前を選んでいないとき)は、必ず「あなたは誰?」から始める。2回目以降は選んだ名前を覚えているので出さない
+
 if (!SOLO && !me) openWho();
-// 見るだけ版:共有リンクから開いたら、そのコードで参加する画面を出す(参加済みで同じコードなら何もしない)
+
 if (SOLO && LINK_CODE) { if (group && group.code === LINK_CODE) store.set('hn-pend', null); else if (!group) openShare(LINK_CODE); else { store.set('hn-pend', null); toast('別のコードのリンクです。いまの共有をやめてから参加してください'); } }
 </script>
 </body></html>
